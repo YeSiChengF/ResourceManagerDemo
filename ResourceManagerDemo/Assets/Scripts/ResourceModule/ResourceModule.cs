@@ -13,8 +13,8 @@ public class ResourceModule: ModuleBase
         get { return m_Instance ?? (m_Instance = new ResourceModule()); }
     }
     #endregion
-    private readonly int UNLOAD_TIME = 10;
-    private readonly int UNLOAD_NUM = 10;
+    public readonly int UNLOAD_TIME = 10;
+    public readonly int UNLOAD_NUM = 10;
     private float lastUnLoadTime;
     public override void Update()
     {
