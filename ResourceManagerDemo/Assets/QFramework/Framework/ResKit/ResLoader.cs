@@ -80,9 +80,20 @@ namespace QFramework
 			return res;
 		}
 		
+		//这里有两个方案，方案一通过url解析来判断(也被称为路由机制)，方案二通过泛型来创建
 		private Res CreateRes(string assetName)
 		{
-			var res = new Res(assetName);
+			Res res = null;
+
+            if (assetName.StartsWith("Resources://"))
+			{
+				//Resoureces时加前缀因为不太常用。性能比较好
+				res = new ResourcesRes(assetName);
+            }
+            else
+			{
+				res = new AssetBundleRes(assetName);
+			}
 			
 			ResMgr.Instance.SharedLoadedReses.Add(res);
 			

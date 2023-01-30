@@ -4,55 +4,21 @@ using Object = UnityEngine.Object;
 
 namespace QFramework
 {
-    public class Res : SimpleRC
+    public abstract class Res : SimpleRC
     {
-        public Object Asset { get; private set; }
+        public Object Asset { get; protected set; }
 
-        public string Name { get; private set; }
+        public string Name { get; protected set; }
 
-        private string mAssetPath;
+        public abstract bool LoadSync();
 
-        public Res(string assetPath)
-        {
-            mAssetPath = assetPath;
+        public abstract void LoadAsync(Action<Res> onLoaded);
 
-            Name = assetPath;
-        }
-
-        public bool LoadSync()
-        {
-            return Asset = Resources.Load(mAssetPath);
-        }
-
-        public void LoadAsync(Action<Res> onLoaded)
-        {
-            var resRequest = Resources.LoadAsync(mAssetPath);
-
-            resRequest.completed += operation =>
-            {
-                Asset = resRequest.asset;
-
-                onLoaded(this);
-               
-            };
-        }
+        protected abstract void OnReleaseRes();
 
         protected override void OnZeroRef()
         {
-            if (Asset is GameObject)
-            {
-                Asset = null;
-                
-                Resources.UnloadUnusedAssets();
-            }
-            else
-            {
-                Resources.UnloadAsset(Asset);
-            }
-
-            ResMgr.Instance.SharedLoadedReses.Remove(this);
-                
-            Asset = null;
+            OnReleaseRes();
         }
     }
 }

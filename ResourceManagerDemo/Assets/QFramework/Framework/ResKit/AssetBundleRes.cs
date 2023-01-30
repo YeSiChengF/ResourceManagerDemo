@@ -4,13 +4,14 @@ using Object = UnityEngine.Object;
 
 namespace QFramework
 {
-    public class AssetBundleRes : SimpleRC
+    public class AssetBundleRes : Res
     {
-        public AssetBundle Asset { get; private set; }
-
-        public string Name { get; private set; }
-
         private string mAssetPath;
+
+        public AssetBundle AssetBundle { 
+            get { return Asset as AssetBundle; }
+            private set { Asset = value; }
+        }
 
         public AssetBundleRes(string assetPath)
         {
@@ -19,28 +20,36 @@ namespace QFramework
             Name = assetPath;
         }
 
-        public bool LoadSync()
+        public override bool LoadSync()
         {
-            return Asset = AssetBundle.LoadFromFile(mAssetPath);
+            return AssetBundle = AssetBundle.LoadFromFile(mAssetPath);
         }
 
-        public void LoadAsync(Action<AssetBundleRes> onLoaded)
+        public override void LoadAsync(Action<Res> onLoaded)
         {
             var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(mAssetPath);
 
             assetBundleCreateRequest.completed += operation =>
             {
-                Asset = assetBundleCreateRequest.assetBundle;
+                AssetBundle = assetBundleCreateRequest.assetBundle;
 
                 onLoaded(this);
                
             };
         }
 
-        protected override void OnZeroRef()
+        protected override void OnReleaseRes()
         {
-            var assetBundle = Asset;
-            assetBundle.Unload(true);
+            AssetBundle assetBundle = AssetBundle;
+
+            if (assetBundle!= null)
+            {
+                assetBundle.Unload(true);
+                Asset = null;
+            }
+
+            ResMgr.Instance.SharedLoadedReses.Remove(this);
         }
+
     }
 }
