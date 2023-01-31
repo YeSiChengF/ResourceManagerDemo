@@ -85,7 +85,7 @@ namespace QFramework
 		{
 			Res res = null;
 
-            if (assetName.StartsWith("Resources://"))
+            if (assetName.StartsWith("resources://"))
 			{
 				//Resoureces时加前缀因为不太常用。性能比较好
 				res = new ResourcesRes(assetName);

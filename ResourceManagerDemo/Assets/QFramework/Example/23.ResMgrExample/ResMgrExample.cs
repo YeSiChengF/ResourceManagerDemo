@@ -25,7 +25,7 @@ namespace QFramework
 		{
 			yield return new WaitForSeconds(2.0f);
 
-			mResLoader.LoadAsync<AudioClip>("coin", coinClip =>
+			mResLoader.LoadAsync<AudioClip>("resources://coin", coinClip =>
 			{
 				Debug.Log(coinClip.name);
 				
@@ -36,13 +36,13 @@ namespace QFramework
 
 			yield return new WaitForSeconds(2.0f);
 
-			mResLoader.LoadSync<AudioClip>("home");
+			mResLoader.LoadSync<AudioClip>("resources://home");
 
 			yield return new WaitForSeconds(2.0f);
 
-			mResLoader.LoadSync<GameObject>("HomePanel");
+			mResLoader.LoadSync<GameObject>("resources://HomePanel");
 			
-			mResLoader.LoadSync<AudioClip>("Audio/coin");
+			mResLoader.LoadSync<AudioClip>("resources://Audio/coin");
 
 			yield return new WaitForSeconds(5.0f);
 

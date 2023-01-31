@@ -13,7 +13,7 @@ namespace QFramework
         private string mAssetPath;
         public ResourcesRes(string assetPath)
         {
-            mAssetPath = assetPath;
+            mAssetPath = assetPath.Substring("resources://".Length);
 
             Name = assetPath;
         }

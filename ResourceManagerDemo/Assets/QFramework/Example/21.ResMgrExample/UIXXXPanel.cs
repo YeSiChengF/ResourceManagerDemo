@@ -12,8 +12,8 @@ namespace QFramework
 			UnityEditor.EditorApplication.isPlaying = true;
 
 			new GameObject("UIXXXPanel")
-				.AddComponent<UIXXXPanel>()
-				.gameObject.AddComponent<UIYYYPanel>();
+				.AddComponent<UIXXXPanel>();
+				//.gameObject.AddComponent<UIYYYPanel>();
 		}
 #endif
 
@@ -21,11 +21,11 @@ namespace QFramework
 
 		private void Start()
 		{
-			var coinClip = mResLoader.LoadSync<AudioClip>("coin");
+			var coinClip = mResLoader.LoadSync<AudioClip>("resources://coin");
 
-			var homeClip = mResLoader.LoadSync<AudioClip>("home");
+			var homeClip = mResLoader.LoadSync<AudioClip>("resources://home");
 
-			var bgClip = mResLoader.LoadSync<AudioClip>("coin");
+			var bgClip = mResLoader.LoadSync<AudioClip>("resources://coin");
 			///
 
 			OtherFunction();
@@ -34,7 +34,7 @@ namespace QFramework
 
 		private void OtherFunction()
 		{
-			var bgClip = mResLoader.LoadSync<AudioClip>("coin");
+			var bgClip = mResLoader.LoadSync<AudioClip>("resources://coin");
 		}
 
 		private void OnDestroy()
@@ -49,11 +49,11 @@ namespace QFramework
 
 		private void Start()
 		{
-			var coinClip = mResLoader.LoadSync<AudioClip>("coin");
+			var coinClip = mResLoader.LoadSync<AudioClip>("resources://coin");
 
-			var homeClip = mResLoader.LoadSync<AudioClip>("home");
+			var homeClip = mResLoader.LoadSync<AudioClip>("resources://home");
 
-			var bgClip = mResLoader.LoadSync<AudioClip>("coin");
+			var bgClip = mResLoader.LoadSync<AudioClip>("resources://coin");
 			///
 
 			OtherFunction();
@@ -62,7 +62,7 @@ namespace QFramework
 
 		private void OtherFunction()
 		{
-			var bgClip = mResLoader.LoadSync<AudioClip>("coin");
+			var bgClip = mResLoader.LoadSync<AudioClip>("resources://coin");
 		}
 
 		private void OnDestroy()
