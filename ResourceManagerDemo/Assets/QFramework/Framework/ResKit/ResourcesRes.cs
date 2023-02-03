@@ -14,9 +14,7 @@ namespace QFramework
         public ResourcesRes(string assetPath)
         {
             mAssetPath = assetPath.Substring("resources://".Length);
-
             Name = assetPath;
-
             ResState = ResState.Waiting;
         }
 
@@ -32,7 +30,6 @@ namespace QFramework
         {
             ResState = ResState.Loading;
             var resRequest = Resources.LoadAsync(mAssetPath);
-
             resRequest.completed += operation =>
             {
                 Asset = resRequest.asset;
@@ -46,16 +43,13 @@ namespace QFramework
             if (Asset is GameObject)
             {
                 Asset = null;
-
                 Resources.UnloadUnusedAssets();
             }
             else
             {
                 Resources.UnloadAsset(Asset);
             }
-
             ResMgr.Instance.SharedLoadedReses.Remove(this);
-
             Asset = null;
         }
     }

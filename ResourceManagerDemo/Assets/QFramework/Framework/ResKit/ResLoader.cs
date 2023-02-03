@@ -6,11 +6,12 @@ using Object = UnityEngine.Object;
 namespace QFramework
 {
     public class ResLoader
-    {	
+    {
+        private List<Res> mResRecord = new List<Res>();
+
         public T LoadSync<T>(string assetName) where T : Object
         {
             var res = GetResFromRecord(assetName);
-
             if (res != null)
             {
                 if (res.ResState == ResState.Loading)
@@ -40,12 +41,10 @@ namespace QFramework
                 {
                     //需要等待
                 }
-
+                //ResState.loaded情况
                 onLoaded(res.Asset as T);
-                
                 return;
             }
-
             // 真正加载资源
             res = CreateRes(assetName);
 
@@ -59,13 +58,11 @@ namespace QFramework
         public void ReleaseAll()
         {
             mResRecord.ForEach(loadedAsset => loadedAsset.Release());
-
             mResRecord.Clear();
         }
         
         
         #region private	
-        private List<Res> mResRecord = new List<Res>();
 
 
         private Res GetRes(string assetName)

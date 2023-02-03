@@ -7,11 +7,12 @@ namespace QFramework
     //AssetBundle的加载类
     public class AssetBundleRes : Res
     {
-        //添加AssetBundleManifest的处理，方案1-初始化加载(后续好处理热更新)、方案2-第一次创建AssetBundle的时候加载
+        //添加AssetBundleManifest的处理，方案1-初始化加载(后续好处理热更新)、方案2-第一次加载AssetBundle的时候加载
         //加载了依赖还需要处理依赖的加载，异步的回调会比较麻烦
         static AssetBundleManifest mManifest;
         public static AssetBundleManifest Manifest
         {
+            //这里用了方案二的懒加载
             get {
                 if (mManifest == null)
                 {
@@ -53,20 +54,17 @@ namespace QFramework
         {
             ResState = ResState.Loading;
             var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath + "/" + mAssetPath);
-
             assetBundleCreateRequest.completed += operation =>
             {
                 AssetBundle = assetBundleCreateRequest.assetBundle;
                 ResState = ResState.loaded;
                 onLoaded(this);
-               
             };
         }
 
         protected override void OnReleaseRes()
         {
             AssetBundle assetBundle = AssetBundle;
-
             if (assetBundle!= null)
             {
                 assetBundle.Unload(true);
@@ -74,7 +72,6 @@ namespace QFramework
                 mResLoader.ReleaseAll();
                 mResLoader = null;
             }
-
             ResMgr.Instance.SharedLoadedReses.Remove(this);
         }
 
