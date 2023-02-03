@@ -16,7 +16,11 @@ public class AssetBundleExample : MonoBehaviour
             Directory.CreateDirectory(Application.streamingAssetsPath);
         }
         //打包
+#if UNITY_EDITOR_OSX
         BuildPipeline.BuildAssetBundles(Application.streamingAssetsPath,BuildAssetBundleOptions.None,BuildTarget.StandaloneOSX);
+#elif UNITY_EDITOR_WIN
+        BuildPipeline.BuildAssetBundles(Application.streamingAssetsPath, BuildAssetBundleOptions.None, BuildTarget.StandaloneWindows);
+#endif
     }
     [MenuItem("Tools/AseetBundle/Run")]
     static void MenuItem2()
