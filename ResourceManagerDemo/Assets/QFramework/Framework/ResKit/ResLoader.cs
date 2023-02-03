@@ -9,13 +9,18 @@ namespace QFramework
 	{	
 		public T LoadSync<T>(string assetName) where T : Object
 		{
-			var res = GetOrCreateRes(assetName);
+			var res = GetResFromRecord(assetName);
 
 			if (res != null)
 			{
-				return res.Asset as T;
+                if (res.ResState == ResState.Loading)
+                {
+                    throw new Exception(String.Format("不要异步加载资源{0}时，进行{1}的同步加载", res, assetName));
+                }
+                //ResState.loaded情况
+                return res.Asset as T;
 			}
-			
+	
 			// 真正加载资源
 			res = CreateRes(assetName);
 
@@ -27,10 +32,15 @@ namespace QFramework
 		public void LoadAsync<T>(string assetName, Action<T> onLoaded) where T : Object
 		{
 			// 查询当前的 资源记录
-			var res = GetOrCreateRes(assetName);
+			var res = GetResFromRecord(assetName);
 
 			if (res != null)
 			{
+				if (res.ResState == ResState.Loading)
+				{
+					//需要等待
+				}
+
 				onLoaded(res.Asset as T);
 				
 				return;
@@ -57,7 +67,14 @@ namespace QFramework
 		#region private	
 		private List<Res> mResRecord = new List<Res>();
 
-		private Res GetOrCreateRes(string assetName)
+
+        private Res GetRes(string assetName)
+        {
+            // 查询当前的 资源记录
+            var res = GetResFromRecord(assetName);
+            return res;
+        }
+        private Res GetOrCreateRes(string assetName)
 		{
 			// 查询当前的 资源记录
 			var res = GetResFromRecord(assetName);

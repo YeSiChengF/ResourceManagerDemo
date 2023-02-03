@@ -17,7 +17,7 @@ namespace QFramework
 
 				SharedLoadedReses.ForEach(loadedRes =>
 				{
-					GUILayout.Label(string.Format("Name:{0} RefCount:{1}", loadedRes.Name, loadedRes.RefCount));
+					GUILayout.Label(string.Format("Name:{0} RefCount:{1} State:{2}", loadedRes.Name, loadedRes.RefCount,loadedRes.ResState));
 				});
 
 				GUILayout.EndVertical();

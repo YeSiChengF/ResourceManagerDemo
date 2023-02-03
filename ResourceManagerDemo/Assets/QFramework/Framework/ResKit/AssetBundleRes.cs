@@ -4,6 +4,7 @@ using Object = UnityEngine.Object;
 
 namespace QFramework
 {
+    //AssetBundle的加载类
     public class AssetBundleRes : Res
     {
         //添加AssetBundleManifest的处理，方案1-初始化加载(后续好处理热更新)、方案2-第一次创建AssetBundle的时候加载
