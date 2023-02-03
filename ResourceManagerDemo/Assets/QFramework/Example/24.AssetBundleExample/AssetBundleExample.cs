@@ -1,6 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.IO;
 using UnityEngine;
 
 namespace QFramework
@@ -30,12 +28,14 @@ namespace QFramework
 		}
 #endif
 
+		private ResLoader mResLoader = new ResLoader();
+		
 		private AssetBundle mBundle;
 		
 		// Use this for initialization
 		void Start()
 		{
-			mBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/gameobject");
+			mBundle = mResLoader.LoadSync<AssetBundle>( "gameobject");
 
 			var gameObj = mBundle.LoadAsset<GameObject>("GameObject");
 
@@ -46,7 +46,10 @@ namespace QFramework
 
 		private void OnDestroy()
 		{
-			mBundle.Unload(true);
+			mBundle = null;
+			
+			mResLoader.ReleaseAll();
+			mResLoader = null;
 		}
 	}
 }

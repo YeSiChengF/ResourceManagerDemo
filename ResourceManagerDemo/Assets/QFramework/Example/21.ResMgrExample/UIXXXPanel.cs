@@ -12,8 +12,8 @@ namespace QFramework
 			UnityEditor.EditorApplication.isPlaying = true;
 
 			new GameObject("UIXXXPanel")
-				.AddComponent<UIXXXPanel>();
-				//.gameObject.AddComponent<UIYYYPanel>();
+				.AddComponent<UIXXXPanel>()
+				.gameObject.AddComponent<UIYYYPanel>();
 		}
 #endif
 
