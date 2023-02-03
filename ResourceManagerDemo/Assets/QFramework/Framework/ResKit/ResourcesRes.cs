@@ -16,23 +16,28 @@ namespace QFramework
             mAssetPath = assetPath.Substring("resources://".Length);
 
             Name = assetPath;
+
+            ResState = ResState.Waiting;
         }
 
         public override bool LoadSync()
         {
-            return Asset = Resources.Load(mAssetPath);
+            ResState = ResState.Loading;
+            Asset = Resources.Load(mAssetPath);
+            ResState = ResState.loaded;
+            return Asset;
         }
 
         public override void LoadAsync(Action<Res> onLoaded)
         {
+            ResState = ResState.Loading;
             var resRequest = Resources.LoadAsync(mAssetPath);
 
             resRequest.completed += operation =>
             {
                 Asset = resRequest.asset;
-
+                ResState = ResState.loaded;
                 onLoaded(this);
-
             };
         }
 

@@ -30,29 +30,33 @@ namespace QFramework
         public AssetBundleRes(string assetPath)
         {
             mAssetPath = assetPath;
-
             Name = assetPath;
+            ResState = ResState.Waiting;
         }
         private ResLoader mResLoader = new ResLoader();
 
         public override bool LoadSync()
         {
+            ResState = ResState.Loading;
             string[] dependencies =  Manifest.GetDirectDependencies(mAssetPath.Substring(Application.streamingAssetsPath.Length - 1));//streamingAssetsPathÄ©Î²ÓÐÐ±¸Ü
             foreach (var dependencyBundleName in dependencies)
             {
-                mResLoader.LoadSync<AssetBundle>(dependencyBundleName);
+                mResLoader.LoadSync<AssetBundle>(Application.streamingAssetsPath + "/" + dependencyBundleName);
             }
-            return AssetBundle = AssetBundle.LoadFromFile(mAssetPath);
+            AssetBundle = AssetBundle.LoadFromFile(mAssetPath);
+            ResState = ResState.loaded;
+            return AssetBundle;
         }
 
         public override void LoadAsync(Action<Res> onLoaded)
         {
+            ResState = ResState.Loading;
             var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(mAssetPath);
 
             assetBundleCreateRequest.completed += operation =>
             {
                 AssetBundle = assetBundleCreateRequest.assetBundle;
-
+                ResState = ResState.loaded;
                 onLoaded(this);
                
             };
@@ -66,6 +70,8 @@ namespace QFramework
             {
                 assetBundle.Unload(true);
                 Asset = null;
+                mResLoader.ReleaseAll();
+                mResLoader = null;
             }
 
             ResMgr.Instance.SharedLoadedReses.Remove(this);
