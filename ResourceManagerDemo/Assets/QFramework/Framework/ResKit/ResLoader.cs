@@ -21,12 +21,9 @@ namespace QFramework
                 //ResState.loaded情况
                 return res.Asset as T;
             }
-    
             // 真正加载资源
             res = CreateRes(assetName);
-
             res.LoadSync();
-            
             return res.Asset as T;
         }
 
@@ -34,7 +31,6 @@ namespace QFramework
         {
             // 查询当前的 资源记录
             var res = GetResFromRecord(assetName);
-
             if (res != null)
             {
                 if (res.ResState == ResState.Loading)
@@ -47,7 +43,6 @@ namespace QFramework
             }
             // 真正加载资源
             res = CreateRes(assetName);
-
             res.LoadAsync(loadedRes =>
             {
                 onLoaded(loadedRes.Asset as T);
@@ -63,7 +58,6 @@ namespace QFramework
         
         
         #region private	
-
 
         private Res GetRes(string assetName)
         {
@@ -98,7 +92,6 @@ namespace QFramework
         private Res CreateRes(string assetName)
         {
             Res res = null;
-
             if (assetName.StartsWith("resources://"))
             {
                 //Resoureces时加前缀因为不太常用。性能比较好
@@ -108,11 +101,8 @@ namespace QFramework
             {
                 res = new AssetBundleRes(assetName);
             }
-            
             ResMgr.Instance.SharedLoadedReses.Add(res);
-            
             AddRes2Record(res);
-
             return res;
         }
 
