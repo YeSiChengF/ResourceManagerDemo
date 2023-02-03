@@ -20,6 +20,7 @@ namespace QFramework
 
 		private void Start()
 		{
+			//触发报错
 			mResLoader.LoadAsync<AssetBundle>("square",
 				squareBundle => { Debug.Log(squareBundle.name); });
 
