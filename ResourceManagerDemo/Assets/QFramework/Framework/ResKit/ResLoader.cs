@@ -31,11 +31,19 @@ namespace QFramework
         {
             // 查询当前的 资源记录
             var res = GetResFromRecord(assetName);
+            Action<Res> onResLoaded = null;
+            onResLoaded = loadedRes =>
+            {
+                onLoaded(loadedRes.Asset as T);
+                res.UnRegiesterOnLoadedEvent(onResLoaded);
+            };
             if (res != null)
             {
                 if (res.ResState == ResState.Loading)
                 {
                     //需要等待
+                    res.RegiesterOnLoadedEvent(onResLoaded);
+                    return;
                 }
                 //ResState.loaded情况
                 onLoaded(res.Asset as T);
@@ -43,6 +51,7 @@ namespace QFramework
             }
             // 真正加载资源
             res = CreateRes(assetName);
+            res.RegiesterOnLoadedEvent(onResLoaded);
             res.LoadAsync();
         }
 
