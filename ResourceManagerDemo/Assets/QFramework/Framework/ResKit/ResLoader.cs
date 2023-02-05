@@ -43,10 +43,7 @@ namespace QFramework
             }
             // 真正加载资源
             res = CreateRes(assetName);
-            res.LoadAsync(loadedRes =>
-            {
-                onLoaded(loadedRes.Asset as T);
-            });
+            res.LoadAsync();
         }
 
 

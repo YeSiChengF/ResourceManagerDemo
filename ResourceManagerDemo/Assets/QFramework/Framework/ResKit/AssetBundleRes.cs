@@ -50,7 +50,7 @@ namespace QFramework
             return AssetBundle;
         }
 
-        public override void LoadAsync(Action<Res> onLoaded)
+        public override void LoadAsync()
         {
             ResState = ResState.Loading;
             var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath + "/" + mAssetPath);
@@ -58,7 +58,6 @@ namespace QFramework
             {
                 AssetBundle = assetBundleCreateRequest.assetBundle;
                 ResState = ResState.loaded;
-                onLoaded(this);
             };
         }
 

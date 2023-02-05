@@ -26,7 +26,7 @@ namespace QFramework
             return Asset;
         }
 
-        public override void LoadAsync(Action<Res> onLoaded)
+        public override void LoadAsync()
         {
             ResState = ResState.Loading;
             var resRequest = Resources.LoadAsync(mAssetPath);
@@ -34,7 +34,6 @@ namespace QFramework
             {
                 Asset = resRequest.asset;
                 ResState = ResState.loaded;
-                onLoaded(this);
             };
         }
 
