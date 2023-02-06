@@ -9,7 +9,16 @@ namespace QFramework
     {
         private List<Res> mResRecord = new List<Res>();
 
+        public T LoadSync<T>(string assetBundleName,string assetName) where T : Object
+        {
+            return DoLoadSync<T>(assetName, assetBundleName);
+        }
+
         public T LoadSync<T>(string assetName) where T : Object
+        {
+            return DoLoadSync<T>(assetName);
+        }
+        private T DoLoadSync<T>(string assetName,string assetBundleName = null) where T : Object
         {
             var res = GetResFromRecord(assetName);
             if (res != null)
@@ -22,12 +31,20 @@ namespace QFramework
                 return res.Asset as T;
             }
             // 真正加载资源
-            res = CreateRes(assetName);
+            res = CreateRes(assetName, assetBundleName);
             res.LoadSync();
             return res.Asset as T;
         }
 
         public void LoadAsync<T>(string assetName, Action<T> onLoaded) where T : Object
+        {
+            DoLoadAsync<T>(assetName,null, onLoaded);
+        }
+        public void LoadAsync<T>(string assetBundleName,string assetName, Action<T> onLoaded) where T : Object
+        {
+            DoLoadAsync<T>(assetName, assetBundleName, onLoaded);
+        }
+        private void DoLoadAsync<T>(string assetName, string assetBundleName, Action<T> onLoaded) where T : Object
         {
             // 查询当前的 资源记录
             var res = GetResFromRecord(assetName);
@@ -95,18 +112,26 @@ namespace QFramework
         }
         
         //这里有两个方案，方案一通过url解析来判断(也被称为路由机制)，方案二通过泛型来创建
-        private Res CreateRes(string assetName)
+        private Res CreateRes(string assetName,string ownerBundleName = null)
         {
             Res res = null;
-            if (assetName.StartsWith("resources://"))
+            if (ownerBundleName != null)
             {
-                //Resoureces时加前缀因为不太常用。性能比较好
-                res = new ResourcesRes(assetName);
+                res = new AssetRes(assetName, ownerBundleName);
             }
             else
             {
-                res = new AssetBundleRes(assetName);
+                if (assetName.StartsWith("resources://"))
+                {
+                    //Resoureces时加前缀因为不太常用。性能比较好
+                    res = new ResourcesRes(assetName);
+                }
+                else
+                {
+                    res = new AssetBundleRes(assetName);
+                }
             }
+           
             ResMgr.Instance.SharedLoadedReses.Add(res);
             AddRes2Record(res);
             return res;
