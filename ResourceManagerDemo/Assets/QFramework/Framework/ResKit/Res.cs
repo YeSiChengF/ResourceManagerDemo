@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -6,9 +6,9 @@ namespace QFramework
 {
     public enum ResState
     {
-        Waiting,//µÈ´ıÖĞ(»¹Ã»¿ªÊ¼¼ÓÔØ)
-        Loading,//¼ÓÔØÖĞ
-        loaded,//ÒÑ¼ÓÔØ
+        Waiting,//ç­‰å¾…ä¸­(è¿˜æ²¡å¼€å§‹åŠ è½½)
+        Loading,//åŠ è½½ä¸­
+        loaded,//å·²åŠ è½½
     }
     public abstract class Res : SimpleRC
     {
