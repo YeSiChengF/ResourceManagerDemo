@@ -4,15 +4,15 @@ using Object = UnityEngine.Object;
 
 namespace QFramework
 {
-    //AssetBundleµÄ¼ÓÔØÀà
+    //AssetBundleçš„åŠ è½½ç±»
     public class AssetBundleRes : Res
     {
-        //Ìí¼ÓAssetBundleManifestµÄ´¦Àí£¬·½°¸1-³õÊ¼»¯¼ÓÔØ(ºóĞøºÃ´¦ÀíÈÈ¸üĞÂ)¡¢·½°¸2-µÚÒ»´Î¼ÓÔØAssetBundleµÄÊ±ºò¼ÓÔØ
-        //¼ÓÔØÁËÒÀÀµ»¹ĞèÒª´¦ÀíÒÀÀµµÄ¼ÓÔØ£¬Òì²½µÄ»Øµ÷»á±È½ÏÂé·³
+        //æ·»åŠ AssetBundleManifestçš„å¤„ç†ï¼Œæ–¹æ¡ˆ1-åˆå§‹åŒ–åŠ è½½(åç»­å¥½å¤„ç†çƒ­æ›´æ–°)ã€æ–¹æ¡ˆ2-ç¬¬ä¸€æ¬¡åŠ è½½AssetBundleçš„æ—¶å€™åŠ è½½
+        //åŠ è½½äº†ä¾èµ–è¿˜éœ€è¦å¤„ç†ä¾èµ–çš„åŠ è½½ï¼Œå¼‚æ­¥çš„å›è°ƒä¼šæ¯”è¾ƒéº»çƒ¦
         static AssetBundleManifest mManifest;
         public static AssetBundleManifest Manifest
         {
-            //ÕâÀïÓÃÁË·½°¸¶şµÄÀÁ¼ÓÔØ
+            //è¿™é‡Œç”¨äº†æ–¹æ¡ˆäºŒçš„æ‡’åŠ è½½
             get {
                 if (mManifest == null)
                 {
@@ -40,7 +40,12 @@ namespace QFramework
         public override bool LoadSync()
         {
             ResState = ResState.Loading;
-            string[] dependencies =  Manifest.GetDirectDependencies(mAssetPath.Substring(Application.streamingAssetsPath.Length - 1));//streamingAssetsPathÄ©Î²ÓĞĞ±¸Ü
+            //åŠ è½½AssetBundleå‰å¿…é¡»è¦å…ˆåŠ è½½ä¾èµ–æ–‡ä»¶
+            //æ¯”å¦‚AåŒ…é‡Œçš„PrefabAæ–‡ä»¶ä¾èµ–BåŒ…é‡Œçš„TexBï¼ŒPrefabAä»åŒ…é‡ŒåŠ è½½å‰BåŒ…å¿…é¡»åŠ è½½å®Œæ¯•ã€‚
+
+            //streamingAssetsPathæœ«å°¾æœ‰æ–œæ æ‰€ä»¥+1
+            //AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/"
+            string[] dependencies =  Manifest.GetDirectDependencies(mAssetPath.Substring(Application.streamingAssetsPath.Length +1));
             foreach (var dependencyBundleName in dependencies)
             {
                 mResLoader.LoadSync<AssetBundle>(Application.streamingAssetsPath + "/" + dependencyBundleName);
@@ -49,16 +54,45 @@ namespace QFramework
             ResState = ResState.loaded;
             return AssetBundle;
         }
+        private void LoadDependencyBundlesAsync(Action onAllLoaded)
+        {
+            //string[] dependencies = Manifest.GetDirectDependencies(mAssetPath.Substring(Application.streamingAssetsPath.Length + 1));//streamingAssetsPathæœ«å°¾æœ‰æ–œæ 
+            string[] dependencies = Manifest.GetDirectDependencies(mAssetPath);
+            int loadedCount = 0;
+            if (dependencies.Length == 0)
+            {
+                onAllLoaded();
+            }
+            foreach (var dependencyBundleName in dependencies)
+            {
+                mResLoader.LoadAsync<AssetBundle>(dependencyBundleName,
+                    dependBundle =>
+                    {
+                        //é€šè¿‡è®¡æ•°åˆ¤æ–­æ˜¯å¦åŠ è½½å®Œæˆ
+                        loadedCount++;
+                        if (loadedCount == dependencies.Length)
+                        {
+                            //å®Œæˆï¼Œèµ°ä¸‹é¢çš„é€»è¾‘
+                            onAllLoaded();
+                        }
+                    });
+            }
+        }
 
         public override void LoadAsync()
         {
             ResState = ResState.Loading;
-            var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath + "/" + mAssetPath);
-            assetBundleCreateRequest.completed += operation =>
+
+            LoadDependencyBundlesAsync(() =>
             {
-                AssetBundle = assetBundleCreateRequest.assetBundle;
-                ResState = ResState.loaded;
-            };
+                //ä¾èµ–æ–‡ä»¶å¼‚æ­¥åŠ è½½å®Œæˆåèµ°è¿™é‡Œã€‚
+                var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath + "/" + mAssetPath);
+                assetBundleCreateRequest.completed += operation =>
+                {
+                    AssetBundle = assetBundleCreateRequest.assetBundle;
+                    ResState = ResState.loaded;
+                };
+            });
         }
 
         protected override void OnReleaseRes()
