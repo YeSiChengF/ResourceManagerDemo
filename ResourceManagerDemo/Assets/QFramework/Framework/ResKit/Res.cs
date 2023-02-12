@@ -20,9 +20,9 @@ namespace QFramework
             protected set
             {
                 mResState = value;
-                if (mResState == QFramework.ResState.loaded)
+                if (mResState == ResState.loaded)
                 {
-                    mOnLoadedEvent.Invoke(this);
+                    mOnLoadedEvent?.Invoke(this);
                 }
             }
         }

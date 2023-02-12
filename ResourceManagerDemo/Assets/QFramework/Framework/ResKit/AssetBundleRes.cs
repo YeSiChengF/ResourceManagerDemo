@@ -1,4 +1,5 @@
 ﻿using System;
+using QFramework.Util;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -16,7 +17,10 @@ namespace QFramework
             get {
                 if (mManifest == null)
                 {
-                    var mainBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/StreamingAssets");
+                    string platformName = ResKitPathUtil.GetPlatformName();
+                    string inputPath = ResKitPathUtil.FullPathForAssetBundles(platformName);
+                    var mainBundle = 
+                        AssetBundle.LoadFromFile(inputPath);
                     mManifest = mainBundle.LoadAsset<AssetBundleManifest>("AssetBundleManifest");
                 }
                 return mManifest;
@@ -29,10 +33,10 @@ namespace QFramework
             private set { Asset = value; }
         }
 
-        public AssetBundleRes(string assetPath)
+        public AssetBundleRes(string assetName)
         {
-            mAssetPath = assetPath;
-            Name = assetPath;
+            mAssetPath = ResKitPathUtil.FullPathForAssetBundles(assetName);
+            Name = assetName;
             ResState = ResState.Waiting;
         }
         private ResLoader mResLoader = new ResLoader();
@@ -43,21 +47,18 @@ namespace QFramework
             //加载AssetBundle前必须要先加载依赖文件
             //比如A包里的PrefabA文件依赖B包里的TexB，PrefabA从包里加载前B包必须加载完毕。
 
-            //streamingAssetsPath末尾有斜杠所以+1
-            //AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/"
-            string[] dependencies =  Manifest.GetDirectDependencies(mAssetPath.Substring(Application.streamingAssetsPath.Length +1));
-            foreach (var dependencyBundleName in dependencies)
+            string[] dependencyBundleNames = Manifest.GetDirectDependencies(Name);
+            foreach (var dependencyBundleName in dependencyBundleNames)
             {
-                mResLoader.LoadSync<AssetBundle>(Application.streamingAssetsPath + "/" + dependencyBundleName);
+                mResLoader.LoadSync<AssetBundle>(dependencyBundleName);
             }
-            AssetBundle = AssetBundle.LoadFromFile(Application.streamingAssetsPath + "/" + mAssetPath);
+            AssetBundle = AssetBundle.LoadFromFile(mAssetPath);
             ResState = ResState.loaded;
             return AssetBundle;
         }
         private void LoadDependencyBundlesAsync(Action onAllLoaded)
         {
-            //string[] dependencies = Manifest.GetDirectDependencies(mAssetPath.Substring(Application.streamingAssetsPath.Length + 1));//streamingAssetsPath末尾有斜杠
-            string[] dependencies = Manifest.GetDirectDependencies(mAssetPath);
+            string[] dependencies = Manifest.GetDirectDependencies(Name);
             int loadedCount = 0;
             if (dependencies.Length == 0)
             {
@@ -86,7 +87,7 @@ namespace QFramework
             LoadDependencyBundlesAsync(() =>
             {
                 //依赖文件异步加载完成后走这里。
-                var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(Application.streamingAssetsPath + "/" + mAssetPath);
+                var assetBundleCreateRequest = AssetBundle.LoadFromFileAsync(mAssetPath);
                 assetBundleCreateRequest.completed += operation =>
                 {
                     AssetBundle = assetBundleCreateRequest.assetBundle;

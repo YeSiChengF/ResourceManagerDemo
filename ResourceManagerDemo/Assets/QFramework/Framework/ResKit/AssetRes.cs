@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Unity.VisualScripting;
-using UnityEditor.VersionControl;
 using UnityEngine;
 
 namespace QFramework
@@ -40,6 +39,7 @@ namespace QFramework
             Asset =  assetBundle.LoadAsset(Name);
             ResState = ResState.loaded;
             return Asset;
+            
         }
 
         protected override void OnReleaseRes()

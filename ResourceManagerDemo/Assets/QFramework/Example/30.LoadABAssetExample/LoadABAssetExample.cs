@@ -24,7 +24,7 @@ namespace QFramework
 		{
 			var squareTexture = mResLoader.LoadSync<Texture2D>("square", "Square");
 			Debug.Log(squareTexture.name);
-			
+			//TODO：异步加载有bug，加载不出来。检查一下
 			mResLoader.LoadAsync<GameObject>("gameobject","GameObject",
 				gameObjPrefab => { Instantiate(gameObjPrefab); });
 		}
